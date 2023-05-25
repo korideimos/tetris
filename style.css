@@ -1,0 +1,37 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: linear-gradient(to right, #859eb6, #89c495);
+    /*background: linear-gradient(to right, blue, pink);*/
+}
+
+.main {
+    width: 320px;
+    height: 620px;
+    margin: 60px auto 0;
+    border: 10px solid white;
+    border-radius: 20px;
+    background-color: #ffffff4a;
+
+    font-size: 0;
+}
+
+.cell {
+    display: inline-block;
+
+    width: 30px;
+    height: 30px;
+    border: 2px solid rgba(255, 255, 255, 0.617);
+
+}
+
+.moovingCell {
+    background-color: #9874c7;
+}
+
+.fixedCell {
+    background-color: #5fb46c;
+}
