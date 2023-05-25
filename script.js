@@ -4,7 +4,6 @@ const main = document.querySelector('.main');
 let gameSpeed = 400;
 
 //Создаем матрицу поля
-
 let playField = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
@@ -25,7 +24,7 @@ let playField = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 ];
 
 let mainInnerHTML = '';
@@ -36,13 +35,14 @@ const draw = function () {
         for (let x = 0; x < playField[y].length; x++) {
             if (playField[y][x] === 1) {
                 mainInnerHTML += '<div class="cell moovingCell"></div>'
+            } else if (playField[y][x] === 2) {
+                mainInnerHTML += '<div class="cell fixedCell"></div>'
             }
             else {
                 mainInnerHTML += '<div class="cell"></div>';
             }
         }
     }
-    // }console.log(mainInnerHTML);
     main.innerHTML = mainInnerHTML;
 }
 
@@ -50,7 +50,7 @@ const canTetroMoveDown = function () {
     for (let y = 0; y < playField.length; y++) {
         for (let x = 0; x < playField[y].length; x++) {
             if (playField[y][x] === 1) {
-                if (y === playField.length - 1) {
+                if ((y === playField.length - 1) || (playField[y + 1][x] === 2)) {
                     return false;
                 }
             }
@@ -89,7 +89,7 @@ const moveTetroDown = function () {
             }
         }
     }
-   else { fixTetro() }
+    else { fixTetro() }
 }
 
 
