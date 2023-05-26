@@ -1,14 +1,18 @@
 const main = document.querySelector('.main');
+const levelHTMLGap = document.querySelector('#level');
+const scoreHTMLGap = document.querySelector('#score');
 
 //Настройка скорости игры
 let gameSpeed = 400;
+let score = 0;
+let level = 1;
 
 //Создаем матрицу поля
 let playField = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 1, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -26,6 +30,53 @@ let playField = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 ];
+
+//Активная фигурка
+let activeTetro = {
+    x: 3,
+    y: 0,
+    shape: [
+        [1, 1, 1],
+        [0, 1, 0],
+        [0, 0, 0]
+    ]
+}
+
+const figures = {
+    0: [[1, 1, 1],
+    [0, 1, 0],
+    [0, 0, 0]],
+
+    1: [[1, 1],
+    [1, 1]],
+
+    2: [[0, 1, 1],
+    [1, 1, 0],
+    [0, 0, 0]],
+
+    3: [[1, 1, 0],
+    [0, 1, 1],
+    [0, 0, 0]],
+
+    4: [[0, 1, 0, 0],
+    [0, 1, 0, 0],
+    [0, 1, 0, 0],
+    [0, 1, 0, 0],],
+
+    5: [[0, 0, 1],
+    [1, 1, 1],
+    [0, 0, 0]],
+
+    6: [[0, 0, 1],
+    [0, 0, 1],
+    [0, 1, 1]]
+}
+
+const getNewTetroShape = function () {
+    let randomFigureNumber = Math.floor(Math.random() * 7);
+    activeTetro.shape = figures[randomFigureNumber];
+    // console.log(figures[randomFigureNumber]);
+}
 
 let mainInnerHTML = '';
 
@@ -46,19 +97,6 @@ const draw = function () {
     main.innerHTML = mainInnerHTML;
 }
 
-const canTetroMoveDown = function () {
-    for (let y = 0; y < playField.length; y++) {
-        for (let x = 0; x < playField[y].length; x++) {
-            if (playField[y][x] === 1) {
-                if ((y === playField.length - 1) || (playField[y + 1][x] === 2)) {
-                    return false;
-                }
-            }
-        }
-    }
-    return true;
-}
-
 const fixTetro = function () {
     for (let y = 0; y < playField.length; y++) {
         for (let x = 0; x < playField[y].length; x++) {
@@ -71,40 +109,81 @@ const fixTetro = function () {
 
     checkLines();
 
-    // Добавляем новую фигурку на поле
-    playField[0] = [0, 0, 0, 0, 1, 1, 0, 0, 0, 0]
-    playField[1] = [0, 0, 0, 0, 1, 1, 0, 0, 0, 0]
+    // Добавляем новую фигурку на поле -- вынесено в отдельную функцию
+
+    // playField[0] = [0, 0, 0, 0, 1, 1, 0, 0, 0, 0]
+    // playField[1] = [0, 0, 0, 0, 1, 1, 0, 0, 0, 0]
+
+    // playField[0] = [0, 0, 0, 1, 1, 0, 0, 0, 0, 0]
+    // playField[1] = [0, 0, 0, 0, 1, 1, 0, 0, 0, 0]
 
 
 }
+const rotateTetro = function () {
+    if (hasCollisions()) {
+        return 0;
+    }
+    // activeTetro.shape = activeTetro.shape[0].map(val, index) =>
+    //     activeTetro.shape.map(row) => row[index].reverse();
+}
 
-const moveTetroDown = function () {
-    if (canTetroMoveDown()) {
-        for (let y = playField.length - 1; y >= 0; y--) {
-            for (let x = playField[y].length - 1; x >= 0; x--) {
-                if (playField[y][x] === 1) {
-                    playField[y + 1][x] = 1;
-                    playField[y][x] = 0;
-                }
+const removePrevActiveTetro = function () {
+    for (let y = playField.length - 1; y >= 0; y--) {
+        for (let x = playField[y].length - 1; x >= 0; x--) {
+            if (playField[y][x] === 1) {
+                playField[y][x] = 0;
             }
         }
     }
-    else { fixTetro() }
+}
+
+const addActiveTetro = function () {
+    removePrevActiveTetro();
+    for (let y = 0; y < activeTetro.shape.length; y++) {
+        for (let x = 0; x < activeTetro.shape[y].length; x++) {
+            if (activeTetro.shape[y][x]) {
+                playField[activeTetro.y + y][activeTetro.x + x] = activeTetro.shape[y][x]
+            }
+        }
+    }
+}
+
+const hasCollisions = function () {
+    for (let y = 0; y < activeTetro.shape.length; y++) {
+        for (let x = 0; x < activeTetro.shape[y].length; x++) {
+            if (activeTetro.shape[y][x] &&
+                (playField[activeTetro.y + y] === undefined ||
+                    playField[activeTetro.y + y][activeTetro.x + x] === undefined ||
+                    playField[activeTetro.y + y][activeTetro.x + x] === 2)) {
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 
-draw();
-
-
 const moveTetroInTime = function () {
-    moveTetroDown()
+    moveTetroDown();
+    addActiveTetro();
     draw();
     setTimeout(moveTetroInTime, gameSpeed);
 }
 
+addActiveTetro();
+draw();
 setTimeout(moveTetroInTime, gameSpeed);
 
-
+const moveTetroDown = function () {
+    activeTetro.y += 1;
+    if (hasCollisions()) {
+        activeTetro.y -= 1;
+        fixTetro();
+        getNewTetroShape();
+        activeTetro.y = 0;
+        activeTetro.x = 3;
+    }
+}
 //Движение фигурки по полю
 window.addEventListener(
     "keydown",
@@ -112,81 +191,34 @@ window.addEventListener(
         switch (event.code) {
             case 'ArrowLeft':
                 //Фигурка двигается ВЛЕВО
-                moveTetroLeft();
+                // moveTetroLeft();
+                activeTetro.x -= 1;
+                if (hasCollisions()) {
+                    activeTetro.x += 1;
+                }
                 break;
             case 'ArrowRight':
                 //Фигурка двигается ВПРАВО
-                moveTetroRight();
+                // moveTetroRight();
+                activeTetro.x += 1;
+                if (hasCollisions()) {
+                    activeTetro.x -= 1;
+                }
                 break;
             case 'ArrowDown':
                 //Двигаем фигурку ВНИЗ быстрее
                 gameSpeed = 40;
-                moveTetroDown();
+                // moveTetroDown();
                 break;
+            case 'Space':
+                rotateTetro();
             default:
                 break;
         }
+        addActiveTetro();
         draw();
     },
 )
-//Возможно ли движение ВЛЕВО
-const canTetroMoveLeft = function () {
-    for (let y = 0; y < playField.length; y++) {
-        for (let x = 0; x < playField[y].length; x++) {
-            if (playField[y][x] === 1) {
-                if ((playField[y][x - 1] === 2) || (x === 0)) {
-                    return false;
-                }
-            }
-        }
-    }
-    return true;
-}
-
-//Фигурка двигается ВЛЕВО
-const moveTetroLeft = function () {
-    console.log(canTetroMoveLeft());
-    if (canTetroMoveLeft()) {
-        for (let y = 0; y < playField.length; y++) {
-            for (let x = 0; x < playField[y].length; x++) {
-                if (playField[y][x] === 1) {
-                    playField[y][x - 1] = 1;
-                    playField[y][x] = 0;
-                }
-            }
-        }
-    }
-}
-
-//Возможно ли движение ВПРАВО
-const canTetroMoveRight = function () {
-    for (let y = 0; y < playField.length; y++) {
-        for (let x = 0; x < playField[y].length; x++) {
-            if (playField[y][x] === 1) {
-                if ((playField[y][x + 1] === 2) || (x === playField[0].length - 1)) {
-                    return false;
-                }
-            }
-        }
-    }
-    return true;
-}
-
-//Фигурка двигается ВПРАВО
-const moveTetroRight = function () {
-    console.log(canTetroMoveRight());
-    if (canTetroMoveRight()) {
-        for (let y = 0; y < playField.length; y++) {
-            for (let x = playField[y].length - 1; x >= 0; x--) {
-                if (playField[y][x] === 1) {
-                    playField[y][x + 1] = 1;
-                    playField[y][x] = 0;
-                }
-            }
-        }
-    }
-}
-
 
 // Проверка, заполнен ли ряд
 const checkLines = function () {
