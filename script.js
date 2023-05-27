@@ -1,6 +1,6 @@
 const main = document.querySelector('.main');
-const levelHTMLGap = document.querySelector('#level');
-const scoreHTMLGap = document.querySelector('#score');
+// const levelHTMLGap = document.querySelector('#level');
+// const scoreHTMLGap = document.querySelector('#score');
 
 //Настройка скорости игры
 let gameSpeed = 400;
@@ -120,11 +120,14 @@ const fixTetro = function () {
 
 }
 const rotateTetro = function () {
+    const prevTetroShape = activeTetro.shape;
+
+    activeTetro.shape = activeTetro.shape[0].map((val, index) =>
+        activeTetro.shape.map((row) => row[index]).reverse()
+    )
     if (hasCollisions()) {
-        return 0;
+        activeTetro.shape = prevTetroShape;
     }
-    // activeTetro.shape = activeTetro.shape[0].map(val, index) =>
-    //     activeTetro.shape.map(row) => row[index].reverse();
 }
 
 const removePrevActiveTetro = function () {
@@ -210,7 +213,7 @@ window.addEventListener(
                 gameSpeed = 40;
                 // moveTetroDown();
                 break;
-            case 'Space':
+            case 'ArrowUp':
                 rotateTetro();
             default:
                 break;
