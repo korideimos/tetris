@@ -24,6 +24,15 @@ body {
     font-size: 0;
 }
 
+#next-tetro {
+    margin: 0;
+    border-radius: 0px;
+    font-size: 0;
+
+    width: 150px;
+    height: 150px;
+}
+
 .cell {
     display: inline-block;
 
