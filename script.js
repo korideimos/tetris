@@ -183,8 +183,8 @@ const moveTetroDown = function () {
     if (hasCollisions()) {
         activeTetro.y -= 1;
         fixTetro();
-        drawNextTetro();
         getNewTetroShape();
+        drawNextTetro();
         activeTetro.y = 0;
         activeTetro.x = 3;
     }
