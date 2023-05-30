@@ -5,10 +5,6 @@
 }
 
 body {
-
-    width: 100vw;
-    height: 100vh;
-
     margin: 0;
     background: linear-gradient(to right, #859eb6, #89c495);
     display: flex;
@@ -25,7 +21,7 @@ body {
 .main {
     width: 320px;
     height: 620px;
-    margin: 60px 0;
+    margin: 20px 0;
     border: 10px solid white;
     border-radius: 20px;
     background-color: #ffffff4a;
@@ -35,7 +31,7 @@ body {
 
 #next-tetro {
     position: absolute;
-    top: 20vh;
+    top: 15vh;
     left: 100%;
 
     transform: translate(-100%, -50%);
@@ -67,7 +63,7 @@ body {
 
 .box-1 {
     position: relative;
-    width: 40vw;
+    width: 32vw;
     height: 100vh;
 }
 
@@ -79,7 +75,7 @@ body {
 
 .score-box {
     position: absolute;
-    top: 95vh;
+    top: 90vh;
     left: 100%;
     width: 400px;
     padding: 30px;
@@ -131,16 +127,33 @@ body {
     transform: rotate(0.25turn);
 }
 
+.btn:nth-child(2):hover {
+    transform: rotate(0.25turn) scale(1.05);
+}
+
+.btn:nth-child(2):active {
+    transform: rotate(0.25turn) scale(1);
+}
+
 .btn:hover {
     background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.05);
+}
 
+.btn:active {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1);
 }
 
 .modal-window {
     z-index: 5;
     width: auto;
     position: absolute;
-    margin: auto;
+    top: 43vh;
+    left: 48%;
+
+    transform: translate(-50%, -50%);
+
     padding: 40px 150px 60px;
 
     background: rgba(0, 0, 0, 0.468);
@@ -178,7 +191,7 @@ body {
 
     width: 100vw;
     height: 100vh;
-    background: #000000c1;
+    background: #000000cc;
     z-index: 1;
 }
 

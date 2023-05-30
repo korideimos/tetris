@@ -4,12 +4,20 @@
 const main = document.querySelector('.main');
 const levelHTMLGap = document.querySelector('#level');
 const scoreHTMLGap = document.querySelector('#score');
-const nextTetroHTMLGap = document.querySelector('#next-tetro')
+const nextTetroHTMLGap = document.querySelector('#next-tetro');
+
+const overlayEnd = document.querySelector('.overlay-game-end');
+const overlayPaused = document.querySelector('.overlay-game-paused');
+const modalWindow = document.querySelector('.modal-window');
+const modalGameOver = document.querySelector('.game-over');
+const modalPause = document.querySelector('.game-stope');
 
 //Переменные игры
 let gameSpeed = 400;
 let score = 0;
 let level = 1;
+
+let isPaused = false;
 
 let playField = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -60,9 +68,9 @@ const figures = {
     [1, 1, 1],
     [0, 0, 0]],
 
-    6: [[0, 0, 1],
-    [0, 0, 1],
-    [0, 1, 1]]
+    6: [[1, 0, 0],
+    [1, 1, 1],
+    [0, 0, 0]]
 }
 
 
@@ -179,15 +187,21 @@ const rotateTetro = function () {
 
 //Для действий -- продвижение вниз
 const moveTetroDown = function () {
-    activeTetro.y += 1;
-    if (hasCollisions()) {
-        activeTetro.y -= 1;
-        fixTetro();
-        getNewTetroShape();
-        drawNextTetro();
-        activeTetro.y = 0;
-        activeTetro.x = 3;
+    if (!isPaused) {
+        activeTetro.y += 1;
+        if (hasCollisions()) {
+            activeTetro.y -= 1;
+            fixTetro();
+            getNewTetroShape();
+            drawNextTetro();
+            activeTetro.y = 0;
+            activeTetro.x = 4;
+            if (hasCollisions()) {
+                gameOver();
+            }
+        }
     }
+
 }
 
 //Для действий -- продвижение вниз по времени
@@ -195,42 +209,46 @@ const moveTetroInTime = function () {
     moveTetroDown();
     addActiveTetro();
     draw();
+
     setTimeout(moveTetroInTime, gameSpeed);
 }
+
 
 //Для действий -- передвижение фигурки при помощи клавиатуры
 window.addEventListener(
     "keydown",
     (event) => {
-        switch (event.code) {
-            case 'ArrowLeft':
-                //Фигурка двигается ВЛЕВО
-                // moveTetroLeft();
-                activeTetro.x -= 1;
-                if (hasCollisions()) {
-                    activeTetro.x += 1;
-                }
-                break;
-            case 'ArrowRight':
-                //Фигурка двигается ВПРАВО
-                // moveTetroRight();
-                activeTetro.x += 1;
-                if (hasCollisions()) {
+        if (!isPaused) {
+            switch (event.code) {
+                case 'ArrowLeft':
+                    //Фигурка двигается ВЛЕВО
+                    // moveTetroLeft();
                     activeTetro.x -= 1;
-                }
-                break;
-            case 'ArrowDown':
-                //Двигаем фигурку ВНИЗ быстрее
-                gameSpeed = 35;
-                // moveTetroDown();
-                break;
-            case 'ArrowUp':
-                rotateTetro();
-            default:
-                break;
+                    if (hasCollisions()) {
+                        activeTetro.x += 1;
+                    }
+                    break;
+                case 'ArrowRight':
+                    //Фигурка двигается ВПРАВО
+                    // moveTetroRight();
+                    activeTetro.x += 1;
+                    if (hasCollisions()) {
+                        activeTetro.x -= 1;
+                    }
+                    break;
+                case 'ArrowDown':
+                    //Двигаем фигурку ВНИЗ быстрее
+                    gameSpeed = 35;
+                    // moveTetroDown();
+                    break;
+                case 'ArrowUp':
+                    rotateTetro();
+                default:
+                    break;
+            }
+            addActiveTetro();
+            draw();
         }
-        addActiveTetro();
-        draw();
     },
 )
 
@@ -287,21 +305,54 @@ const checkLines = function () {
 
 //Основная -- запуск игры
 const startNewGame = function () {
+    gameSpeed = 400;
+    score = 0;
+    level = 1;
+    activeTetro.y = 0;
+
     getNewTetroShape();
     getNewTetroShape();
     addActiveTetro();
     draw();
     drawNextTetro();
-    setTimeout(moveTetroInTime, gameSpeed);
-    gameSpeed = 400;
-    score = 0;
-    level = 1;
+    setTimeout(moveTetroInTime, gameSpeed)
 }
 
-//Основная -- запуск игры
+
+
+
+//Основная -- игра окончена
 const gameOver = function () {
+    modalWindow.classList.remove('hidden');
+    modalGameOver.classList.remove('hidden');
+    overlayEnd.classList.remove('hidden');
+    isPaused = true;
 
 }
+//Основная -- игра остановлена
+const gamePaused = function () {
+    modalWindow.classList.remove('hidden');
+    modalPause.classList.remove('hidden');
+    overlayPaused.classList.remove('hidden');
+    isPaused = true;
+}
+
+//Основная -- игра продолжается
+const gameCont = function () {
+    modalWindow.classList.add('hidden');
+    modalPause.classList.add('hidden');
+    overlayPaused.classList.add('hidden');
+    isPaused = false;
+}
+
+// Кнопки -- пауза/продолжить
+document.querySelector('.btn-stop').addEventListener('click', gamePaused);
+document.querySelector('#btn-cont').addEventListener('click', gameCont);
+document.querySelector('.overlay-game-paused').addEventListener('click', gameCont);
+
+// Кнопки -- новая игра
+document.querySelector('.btn-again').addEventListener('click', () => location.reload());
+document.querySelector('#btn-restart').addEventListener('click', () => location.reload());
 
 
 startNewGame();
